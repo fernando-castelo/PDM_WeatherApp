@@ -1,5 +1,6 @@
 package com.example.pdm_weatherapp
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -34,7 +35,8 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
+
 
 class RegisterActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +44,7 @@ class RegisterActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            WeatherAppTheme {
+            PDM_WeatherAPPTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RegisterPage(
                         modifier = Modifier.padding(innerPadding))
@@ -52,6 +54,7 @@ class RegisterActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("ContextCastToActivity")
 @Composable
 fun RegisterPage(modifier: Modifier = Modifier, activity: Activity? = null) {
     var name by rememberSaveable { mutableStateOf("") }

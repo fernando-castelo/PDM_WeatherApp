@@ -1,7 +1,6 @@
 package com.example.pdm_weatherapp
 
-import com.example.weatherapp.MainActivity
-
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -34,15 +33,16 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.weatherapp.ui.theme.WeatherAppTheme
+import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
+
 
 class LoginActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            WeatherAppTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+            PDM_WeatherAPPTheme {
+                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     LoginPage(modifier = Modifier.padding(innerPadding))
                 }
             }
@@ -50,6 +50,7 @@ class LoginActivity : ComponentActivity() {
     }
 }
 
+@SuppressLint("ContextCastToActivity")
 @Preview(showBackground = true)
 @Composable
 fun LoginPage(modifier: Modifier = Modifier) {

@@ -30,10 +30,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
-import com.example.weatherapp.ui.nav.BottomNavBar
+import com.example.pdm_weatherapp.ui.nav.BottomNavBar
+import com.example.pdm_weatherapp.ui.nav.MainNavHost
+import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.example.weatherapp.ui.nav.BottomNavItem
-import com.example.weatherapp.ui.nav.MainNavHost
-import com.example.weatherapp.ui.theme.WeatherAppTheme
+
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val navController = rememberNavController()
-            WeatherAppTheme {
+            PDM_WeatherAPPTheme {
                 Scaffold(
                     topBar = {
                         TopAppBar(
