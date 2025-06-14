@@ -134,11 +134,7 @@ fun RegisterPage(modifier: Modifier = Modifier, activity: Activity? = null) {
             Button(
                 onClick = {
                     Toast.makeText(activity, "Registro confirmado!", Toast.LENGTH_LONG).show()
-                    activity?.startActivity(
-                        Intent(activity, RegisterActivity::class.java).setFlags(
-                            FLAG_ACTIVITY_SINGLE_TOP
-                        )
-                    )
+                    activity?.finish()
                 },
                 enabled = isRegisterEnabled,
                 modifier = Modifier.weight(1f).padding(end = 4.dp)
