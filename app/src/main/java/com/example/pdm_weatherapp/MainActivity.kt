@@ -46,6 +46,8 @@ import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.example.weatherapp.ui.nav.BottomNavItem
 import com.example.weatherapp.ui.nav.Route
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 
 class MainActivity : ComponentActivity() {
@@ -132,7 +134,8 @@ fun HomePage(modifier: Modifier = Modifier,
 
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = {
-            activity?.finish()
+            Firebase.auth.signOut()
+           activity?.finish()
         }) {
             Text("Sair")
         }
