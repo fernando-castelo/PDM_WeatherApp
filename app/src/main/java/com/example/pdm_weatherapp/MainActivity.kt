@@ -1,10 +1,13 @@
 package com.example.pdm_weatherapp
 
+import android.Manifest
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,12 +37,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.pdm_weatherapp.ui.CityDialog
 import com.example.pdm_weatherapp.ui.nav.BottomNavBar
 import com.example.pdm_weatherapp.ui.nav.MainNavHost
 import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.example.weatherapp.ui.nav.BottomNavItem
+import com.example.weatherapp.ui.nav.Route
+import androidx.navigation.NavDestination.Companion.hasRoute
 
 
 class MainActivity : ComponentActivity() {
@@ -51,6 +57,10 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val viewModel : MainViewModel by viewModels()
             var showDialog by remember { mutableStateOf(false) }
+            val currentRoute = navController.currentBackStackEntryAsState()
+            val showButton = currentRoute.value?.destination?.hasRoute(Route.List::class) == true
+            val launcher = rememberLauncherForActivityResult(contract =
+                ActivityResultContracts.RequestPermission(), onResult = {} )
 
             PDM_WeatherAPPTheme {
                 if (showDialog) CityDialog(
@@ -96,6 +106,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
+                        launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
                         MainNavHost(navController = navController,
                                     viewModel = viewModel)
                     }
