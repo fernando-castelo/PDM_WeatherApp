@@ -6,9 +6,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.pdm_weatherapp.HomePage
-import com.example.pdm_weatherapp.ListPage
+import com.example.pdm_weatherapp.ui.ListPage
 import com.example.pdm_weatherapp.MainViewModel
-import com.example.pdm_weatherapp.MapPage
+import com.example.pdm_weatherapp.ui.MapPage
 
 @Composable
 fun MainNavHost(navController: NavHostController,

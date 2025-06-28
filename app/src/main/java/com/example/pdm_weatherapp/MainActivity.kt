@@ -135,7 +135,6 @@ fun HomePage(modifier: Modifier = Modifier,
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = {
             Firebase.auth.signOut()
-           activity?.finish()
         }) {
             Text("Sair")
         }
