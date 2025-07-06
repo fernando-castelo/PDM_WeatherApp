@@ -35,6 +35,9 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.pdm_weatherapp.db.fb.FBDatabase
+import com.example.pdm_weatherapp.db.fb.toFBUser
+import com.example.pdm_weatherapp.model.User
 import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -137,6 +140,7 @@ fun RegisterPage(modifier: Modifier = Modifier, activity: Activity? = null) {
                     Firebase.auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(activity!!) { task ->
                             if (task.isSuccessful) {
+                                FBDatabase().register(User(name, email).toFBUser())
                                 Toast.makeText(activity,
                                     "Registro OK!", Toast.LENGTH_LONG).show()
                             } else {
