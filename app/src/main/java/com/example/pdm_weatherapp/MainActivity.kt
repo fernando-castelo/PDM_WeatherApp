@@ -47,6 +47,7 @@ import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.example.weatherapp.ui.nav.BottomNavItem
 import com.example.weatherapp.ui.nav.Route
 import androidx.navigation.NavDestination.Companion.hasRoute
+import com.example.pdm_weatherapp.api.WeatherService
 import com.example.pdm_weatherapp.db.fb.FBDatabase
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -59,8 +60,9 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val fbDB = remember { FBDatabase() }
+            val weatherService = remember { WeatherService() }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB)
+                factory = MainViewModelFactory(fbDB, weatherService)
             )
             val navController = rememberNavController()
             var showDialog by remember { mutableStateOf(false) }
