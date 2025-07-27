@@ -22,10 +22,6 @@ import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun MapPage(viewModel: MainViewModel) {
-
-    val recife = LatLng(-8.05, -34.9)
-    val caruaru = LatLng(-8.27, -35.98)
-    val joaopessoa = LatLng(-7.12, -34.84)
     val camPosState = rememberCameraPositionState ()
 
     val context = LocalContext.current
@@ -52,28 +48,5 @@ fun MapPage(viewModel: MainViewModel) {
             }
         }
 
-        Marker(
-            state = MarkerState(position = recife),
-            title = "Recife",
-            snippet = "Marcador em Recife",
-            icon = BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_BLUE)
-        )
-
-        Marker(
-            state = MarkerState(position = caruaru),
-            title = "Caruaru",
-            snippet = "Marcador em Caruaru",
-            icon = BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_RED)
-        )
-
-        Marker(
-            state = MarkerState(position = joaopessoa),
-            title = "João Pessoa",
-            snippet = "Marcador em João Pessoa",
-            icon = BitmapDescriptorFactory.defaultMarker(
-                BitmapDescriptorFactory.HUE_MAGENTA)
-        )
     }
 }
