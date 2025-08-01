@@ -1,10 +1,12 @@
 package com.example.pdm_weatherapp
 
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.example.pdm_weatherapp.api.WeatherService
+import com.example.pdm_weatherapp.api.toWeather
 import com.example.pdm_weatherapp.db.fb.FBCity
 import com.example.pdm_weatherapp.db.fb.FBDatabase
 import com.example.pdm_weatherapp.db.fb.FBUser
@@ -12,13 +14,15 @@ import com.example.pdm_weatherapp.db.fb.toFBCity
 import com.example.pdm_weatherapp.model.City
 import com.example.pdm_weatherapp.model.User
 import com.google.android.gms.maps.model.LatLng
+import kotlin.collections.set
 
 class MainViewModel (private val db: FBDatabase,
                      private val service: WeatherService): ViewModel(),
     FBDatabase.Listener {
-    private val _cities = mutableStateListOf<City>()
-    val cities
-        get() = _cities.toList()
+    private val _cities = mutableStateMapOf<String, City>()
+    val cities : List<City>
+        get() = _cities.values.toList()
+
     private val _user = mutableStateOf<User?> (null)
     val user : User?
         get() = _user.value
@@ -43,20 +47,30 @@ class MainViewModel (private val db: FBDatabase,
         }
     }
 
+    override fun onCityAdded(city: FBCity) {
+        _cities[city.name!!] = city.toCity()
+    }
+    override fun onCityUpdated(city: FBCity) {
+        _cities.remove(city.name)
+        _cities[city.name!!] = city.toCity()
+    }
+    override fun onCityRemoved(city: FBCity) {
+        _cities.remove(city.name)
+    }
+
+    fun loadWeather(name: String) {
+        service.getWeather(name) { apiWeather ->
+            val newCity = _cities[name]!!.copy( weather = apiWeather?.toWeather()?.toString())
+            _cities.remove(name)
+            _cities[name] = newCity
+        }
+    }
+
     override fun onUserLoaded(user: FBUser) {
         _user.value = user.toUser()
     }
     override fun onUserSignOut() {
         //TODO("Not yet implemented")
-    }
-    override fun onCityAdded(city: FBCity) {
-        _cities.add(city.toCity())
-    }
-    override fun onCityUpdated(city: FBCity) {
-        //TODO("Not yet implemented")
-    }
-    override fun onCityRemoved(city: FBCity) {
-        _cities.remove(city.toCity())
     }
 }
 

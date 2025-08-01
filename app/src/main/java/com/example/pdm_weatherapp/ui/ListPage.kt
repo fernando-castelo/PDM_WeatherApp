@@ -20,12 +20,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pdm_weatherapp.MainViewModel
+import com.example.pdm_weatherapp.db.fb.toFBCity
 import com.example.pdm_weatherapp.model.City
 
 @SuppressLint("ContextCastToActivity")
@@ -42,10 +44,15 @@ fun ListPage(modifier: Modifier = Modifier,
             .padding(8.dp)
     ) {
         items(cityList, key = { it.name }) { city ->
+            LaunchedEffect(city.name) {
+                if (city.weather == null) {
+                    viewModel.loadWeather(city.name)
+                }
+            }
             CityItem(city = city,
                 onClose = {
                 /* TO DO */
-                viewModel.remove(city)
+                viewModel.onCityRemoved(city.toFBCity())
                 Toast.makeText(activity, "Cidade removida: $city.name", Toast.LENGTH_LONG).show()
 
             }, onClick = {
@@ -80,7 +87,7 @@ fun CityItem(
             )
             Text(
                 modifier = Modifier,
-                text = city.weather ?: "Carregando clima...",
+                text = city.weather?:"carregando...",
                 fontSize = 16.sp
             )
         }
