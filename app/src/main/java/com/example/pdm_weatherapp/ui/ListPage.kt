@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import com.example.pdm_weatherapp.MainViewModel
 import com.example.pdm_weatherapp.db.fb.toFBCity
 import com.example.pdm_weatherapp.model.City
+import com.example.weatherapp.ui.nav.Route
 
 @SuppressLint("ContextCastToActivity")
 @Composable
@@ -50,15 +51,13 @@ fun ListPage(modifier: Modifier = Modifier,
                 }
             }
             CityItem(city = city,
-                onClose = {
-                /* TO DO */
-                viewModel.onCityRemoved(city.toFBCity())
-                Toast.makeText(activity, "Cidade removida: $city.name", Toast.LENGTH_LONG).show()
-
-            }, onClick = {
-                /* TO DO */
-                Toast.makeText(activity, city.name, Toast.LENGTH_LONG).show()
-            })
+                     onClick = {
+                         viewModel.city = city
+                         viewModel.page = Route.Home},
+                     onClose = {
+                     viewModel.onCityRemoved(city.toFBCity())
+                     Toast.makeText(activity, "Cidade removida: $city.name", Toast.LENGTH_LONG).show()
+                        })
         }
     }
 }

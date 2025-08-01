@@ -1,6 +1,7 @@
 package com.example.pdm_weatherapp.api
 
 import com.example.pdm_weatherapp.BuildConfig
+import com.example.pdm_weatherapp.api.forecast.APIWeatherForecast
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -17,4 +18,7 @@ interface WeatherServiceAPI {
     @GET("current.json?key=$API_KEY&lang=pt")
     fun weather(@Query("q") query: String): Call<APICurrentWeather?>
 
+
+    @GET("forecast.json?key=$API_KEY&days=10&lang=pt")
+    fun forecast(@Query("q") name: String): Call<APIWeatherForecast?>
 }
