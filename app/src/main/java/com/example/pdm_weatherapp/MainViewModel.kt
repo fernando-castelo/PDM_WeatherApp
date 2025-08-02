@@ -77,7 +77,7 @@ class MainViewModel (private val db: FBDatabase,
 
     fun loadWeather(name: String) {
         service.getWeather(name) { apiWeather ->
-            val newCity = _cities[name]!!.copy( weather = apiWeather?.toWeather()?.toString())
+            val newCity = _cities[name]!!.copy( weather = apiWeather?.toWeather())
             _cities.remove(name)
             _cities[name] = newCity
         }
@@ -92,6 +92,19 @@ class MainViewModel (private val db: FBDatabase,
         }
     }
 
+    fun loadBitmap(name: String) {
+        val city = _cities[name]
+        service.getBitmap(city?.weather!!.imgUrl) { bitmap ->
+            val newCity = city.copy(
+                weather = city.weather?.copy(
+                    bitmap = bitmap
+                )
+            )
+            _cities.remove(name)
+            _cities[name] = newCity
+        }
+    }
+
 
     override fun onUserLoaded(user: FBUser) {
         _user.value = user.toUser()
@@ -101,8 +114,8 @@ class MainViewModel (private val db: FBDatabase,
     }
 }
 
-private fun getCities() = List(20) { i ->
-    City(name = "Cidade $i", weather = "Carregando clima...")
-}
+//private fun getCities() = List(20) { i ->
+//    City(name = "Cidade $i", weather = "Carregando clima...")
+//}
 
 

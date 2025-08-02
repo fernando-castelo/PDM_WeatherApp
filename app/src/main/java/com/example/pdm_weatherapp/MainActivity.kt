@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -59,6 +60,7 @@ import com.example.pdm_weatherapp.ui.theme.PDM_WeatherAPPTheme
 import com.example.weatherapp.ui.nav.BottomNavItem
 import com.example.weatherapp.ui.nav.Route
 import androidx.navigation.NavDestination.Companion.hasRoute
+import coil.compose.AsyncImage
 import com.example.pdm_weatherapp.api.WeatherService
 import com.example.pdm_weatherapp.db.fb.FBDatabase
 import com.example.pdm_weatherapp.ui.ForecastItem
@@ -167,17 +169,19 @@ fun HomePage(viewModel: MainViewModel) {
             }
         } else {
             Row {
-                Icon(
-                    imageVector = Icons.Filled.AccountBox,
-                    contentDescription = "Localized description",
-                    modifier = Modifier.size(150.dp)
+                AsyncImage(
+                    model = viewModel.city?.weather?.imgUrl,
+                    modifier = Modifier.size(100.dp),
+                    error = painterResource(id = R.drawable.loading),
+                    contentDescription = "Imagem"
                 )
+
                 Column {
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city?.name ?: "Selecione uma cidade...",
                         fontSize = 28.sp )
                     Spacer(modifier = Modifier.size(12.dp))
-                    Text( text = viewModel.city?.weather?: "...",
+                    Text( text = viewModel.city?.weather?.toString()?: "...",
                         fontSize = 22.sp )
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = "Temp: " + viewModel.city?.weather + "℃",
