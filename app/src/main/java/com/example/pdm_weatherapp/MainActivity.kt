@@ -2,6 +2,7 @@ package com.example.pdm_weatherapp
 
 import android.Manifest
 import android.app.Activity
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -10,15 +11,18 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -26,6 +30,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.AccountBox
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -35,6 +41,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +57,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.util.Consumer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -63,6 +71,7 @@ import androidx.navigation.NavDestination.Companion.hasRoute
 import coil.compose.AsyncImage
 import com.example.pdm_weatherapp.api.WeatherService
 import com.example.pdm_weatherapp.db.fb.FBDatabase
+import com.example.pdm_weatherapp.monitor.ForecastMonitor
 import com.example.pdm_weatherapp.ui.ForecastItem
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
@@ -76,15 +85,27 @@ class MainActivity : ComponentActivity() {
         setContent {
             val fbDB = remember { FBDatabase() }
             val weatherService = remember { WeatherService() }
+            val forecastMonitor = remember { ForecastMonitor(this) }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB, weatherService)
+                factory = MainViewModelFactory(fbDB, weatherService, forecastMonitor)
             )
+            DisposableEffect(Unit) {
+                val listener = Consumer<Intent> { intent ->
+                    val name = intent.getStringExtra("city")
+                    val city = viewModel.cities.find { it.name == name }
+                    viewModel.city = city
+                    viewModel.page = Route.Home
+                }
+                addOnNewIntentListener(listener)
+                onDispose { removeOnNewIntentListener(listener) }
+            }
             val navController = rememberNavController()
             var showDialog by remember { mutableStateOf(false) }
             val currentRoute = navController.currentBackStackEntryAsState()
             val showButton = currentRoute.value?.destination?.hasRoute(Route.List::class) == true
             val launcher = rememberLauncherForActivityResult(contract =
                 ActivityResultContracts.RequestPermission(), onResult = {} )
+            val notificationLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = {})
 
             PDM_WeatherAPPTheme {
                 if (showDialog) CityDialog(
@@ -131,6 +152,7 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         launcher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                        notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         MainNavHost(navController = navController,
                                     viewModel = viewModel)
                     }
@@ -177,6 +199,39 @@ fun HomePage(viewModel: MainViewModel) {
                 )
 
                 Column {
+                    Spacer(modifier = Modifier.size(12.dp))
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = viewModel.city?.name ?: "Selecione uma cidade...",
+                            fontSize = 28.sp,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        val icon = if (viewModel.city!!.isMonitored) {
+                            Icons.Filled.Notifications
+                        } else {
+                            Icons.Outlined.Notifications
+                        }
+
+                        Icon(
+                            imageVector = icon, contentDescription = "Monitorada?",
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clickable(enabled = viewModel.city != null) {
+                                    viewModel.update(
+                                        viewModel.city!!.copy(
+                                            isMonitored = !viewModel.city!!.isMonitored
+                                        )
+                                    )
+                                }
+                        )
+
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city?.name ?: "Selecione uma cidade...",
                         fontSize = 28.sp )

@@ -7,16 +7,17 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.9.0"
     id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.google.gms.google.services)
+    id("com.google.devtools.ksp") version "2.2.0-2.0.2"
 }
 
 android {
     namespace = "com.example.pdm_weatherapp"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.pdm_weatherapp"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -25,8 +26,10 @@ android {
         props.load(keyFile.inputStream())
         buildConfigField ("String", "WEATHER_API_KEY",
             props.getProperty("WEATHER_API_KEY"))
+    }
 
-
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
 
     buildTypes {
@@ -52,7 +55,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -65,6 +67,7 @@ dependencies {
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -84,4 +87,8 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("io.coil-kt:coil-compose:2.5.0") // coil
     implementation("com.squareup.picasso:picasso:2.8") //Picasso
+    val roomVersion = "2.7.2"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 }

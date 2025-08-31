@@ -14,14 +14,15 @@ import com.example.pdm_weatherapp.db.fb.FBUser
 import com.example.pdm_weatherapp.db.fb.toFBCity
 import com.example.pdm_weatherapp.model.City
 import com.example.pdm_weatherapp.model.User
+import com.example.pdm_weatherapp.monitor.ForecastMonitor
 import com.example.weatherapp.ui.nav.Route
 import com.google.android.gms.maps.model.LatLng
 import kotlin.collections.set
 
 class MainViewModel (private val db: FBDatabase,
-                     private val service: WeatherService): ViewModel(),
+                     private val service: WeatherService,
+                     private val forecastMonitor: ForecastMonitor): ViewModel(),
     FBDatabase.Listener {
-
 
     private var _city = mutableStateOf<City?>(null)
     var city: City?
@@ -61,18 +62,32 @@ class MainViewModel (private val db: FBDatabase,
         }
     }
 
+    fun update (city: City) {
+        db.update(city.toFBCity())
+    }
+
     override fun onCityAdded(city: FBCity) {
         _cities[city.name!!] = city.toCity()
+        forecastMonitor.updateCity(city.toCity())
     }
     override fun onCityUpdated(city: FBCity) {
+        val oldCity = _cities[city.name]
         _cities.remove(city.name)
-        _cities[city.name!!] = city.toCity()
-        if (_city.value?.name == city.name) { _city.value = city.toCity() }
-
+        _cities[city.name!!] = city.toCity().copy(
+            weather = oldCity?.weather,
+            forecast = oldCity?.forecast
+        )
+        if (_city.value?.name == city.name) {
+            _city.value = _cities[city.name]
+            forecastMonitor.updateCity(city.toCity())
+        }
     }
     override fun onCityRemoved(city: FBCity) {
         _cities.remove(city.name)
-        if (_city.value?.name == city.name) { _city.value = null }
+        if (_city.value?.name == city.name) {
+            _city.value = null
+            forecastMonitor.cancelCity(city.toCity())
+        }
     }
 
     fun loadWeather(name: String) {
@@ -105,17 +120,13 @@ class MainViewModel (private val db: FBDatabase,
         }
     }
 
-
     override fun onUserLoaded(user: FBUser) {
         _user.value = user.toUser()
     }
     override fun onUserSignOut() {
-        //TODO("Not yet implemented")
+        forecastMonitor.cancelAll()
     }
 }
 
-//private fun getCities() = List(20) { i ->
-//    City(name = "Cidade $i", weather = "Carregando clima...")
-//}
 
 

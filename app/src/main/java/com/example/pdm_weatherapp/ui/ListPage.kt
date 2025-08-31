@@ -15,6 +15,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -27,11 +29,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.example.pdm_weatherapp.MainViewModel
 import com.example.pdm_weatherapp.R
 import com.example.pdm_weatherapp.db.fb.toFBCity
 import com.example.pdm_weatherapp.model.City
+import com.example.weatherapp.ui.nav.BottomNavItem.HomeButton.icon
 import com.example.weatherapp.ui.nav.Route
 
 @SuppressLint("ContextCastToActivity")
@@ -72,6 +76,12 @@ fun CityItem(
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val icon = if (city.isMonitored) {
+        Icons.Filled.Notifications
+    } else {
+        Icons.Outlined.Notifications
+    }
     Row(
         modifier = modifier.fillMaxWidth().padding(8.dp).clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
@@ -91,10 +101,18 @@ fun CityItem(
             )
             Text(
                 modifier = Modifier,
-                text = city.weather?.toString()?:"carregando...",
+                text = city.weather?.desc?:"carregando...",
                 fontSize = 16.sp
             )
         }
+
+        Icon(
+            imageVector = icon,
+            contentDescription = "Status de monitoramento",
+            modifier = Modifier.size(24.dp)
+        )
+
+        Spacer(modifier = Modifier.size(8.dp))
         IconButton(onClick = onClose) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
